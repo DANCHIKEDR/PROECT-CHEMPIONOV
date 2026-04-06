@@ -91,6 +91,32 @@ class DataProcessor:
         else:
             return {'error': f'Неподдерживаемый тип данных: {type(data)}', 'type': 'error'}
     
+    def analyze_history(self):
+        """Анализ истории обработанных данных"""
+        if not self.data_history:
+            return {"message": "История пуста"}
+
+        stats = {
+            "total": len(self.data_history),
+            "numbers": 0,
+            "texts": 0,
+            "lists": 0,
+            "booleans": 0
+        }
+
+        for item in self.data_history:
+            data_type = item.get("type")
+            if data_type == "number":
+                stats["numbers"] += 1
+            elif data_type == "text":
+                stats["texts"] += 1
+            elif data_type == "list":
+                stats["lists"] += 1
+            elif data_type == "boolean":
+                stats["booleans"] += 1
+
+        return stats
+
     def get_history(self):
         """Получение истории обработки"""
         return self.data_history
@@ -137,6 +163,7 @@ def interactive_mode():
     print("\nКоманды:")
     print("  • 'exit' - выход из программы")
     print("  • 'history' - показать историю")
+    print("  • 'stats' - статистика по данным")
     print("  • 'clear' - очистить историю")
     print("="*60)
     
@@ -157,6 +184,12 @@ def interactive_mode():
                     print(f"\nВсего обработано: {len(history)} записей")
                 else:
                     print("📭 История пуста")
+                continue
+            elif user_input.lower() == 'stats':
+                stats = processor.analyze_history()
+                print("\n📊 Статистика:")
+                for key, value in stats.items():
+                    print(f"{key}: {value}")
                 continue
             elif user_input.lower() == 'clear':
                 processor.clear_history()
